@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:securehealth/constants/colors.dart';
+import 'package:securehealth/pages/document_upload/document_upload.dart';
 import 'package:securehealth/pages/signup/signup.dart';
 
 void main() {
@@ -93,7 +94,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: SignUpPage(),
+      home: DocumentUpload(),
       
     );
   }
