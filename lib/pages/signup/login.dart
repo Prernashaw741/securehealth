@@ -5,8 +5,8 @@ import 'package:securehealth/constants/colors.dart';
 import 'package:securehealth/constants/routes.dart';
 import 'package:securehealth/pages/signup/components/input.dart';
 
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +48,20 @@ class SignUpPage extends StatelessWidget {
                     height: 40,
                   ),
                   Text(
-                    "Create a new account",
+                    "Login",
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                   const SizedBox(
                     height: 5,
                   ),
                   Text(
-                    "Please put your information below to create a new account",
+                    "Please put your information below to Login",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(
                     height: 40,
                   ),
-                  SignUpInput(
-                    label: "Full Name",
-                    isPassword: false,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  
                   SignUpInput(
                     label: "Email",
                     isPassword: false,
@@ -83,9 +77,11 @@ class SignUpPage extends StatelessWidget {
                     height: 30,
                   ),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(Routes.dashboard);
+                      },
                       child: Text(
-                        "Sign Up",
+                        "Login",
                       )),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -94,10 +90,10 @@ class SignUpPage extends StatelessWidget {
                         elevation: 0,
                       ),
                       onPressed: () {
-                        Get.toNamed(Routes.login);
+                        Get.toNamed(Routes.signup);
                       },
                       child: Text(
-                        "Login",
+                        "Sign Up",
                       ))
                 ],
               ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:securehealth/constants/colors.dart';
+import 'package:securehealth/constants/pages.dart';
+import 'package:securehealth/constants/routes.dart';
 import 'package:securehealth/pages/document_upload/document_upload.dart';
 import 'package:securehealth/pages/signup/signup.dart';
 
@@ -14,7 +17,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SecureHealth App',
       theme: ThemeData(
@@ -94,7 +97,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: DocumentUpload(),
+      getPages: pages,
+      initialRoute: Routes.login,
       
     );
   }

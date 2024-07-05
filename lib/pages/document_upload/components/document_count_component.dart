@@ -1,18 +1,23 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:securehealth/pages/document_upload/components/upload_documents_modal.dart';
 
 class DocumentCountComponent extends StatelessWidget {
   final int count;
-  const DocumentCountComponent({super.key,required this.count});
+  const DocumentCountComponent({super.key, required this.count});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: Color(0xFF240046), borderRadius: BorderRadius.circular(10)),
+          color: const Color(0xFF240046),
+          borderRadius: BorderRadius.circular(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -47,9 +52,16 @@ class DocumentCountComponent extends StatelessWidget {
               )
             ],
           ),
-          Gap(10),
+          const Gap(10),
           ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return UploadDocumentsModal();
+                  },
+                );
+              },
               child: Text(
                 "Upload Documents",
                 style: GoogleFonts.inter(

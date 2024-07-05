@@ -38,6 +38,8 @@ dependencies:
   google_fonts: 6.1.0
   flutter_svg:
   gap:
+  file_picker:
+  get:
 
 dev_dependencies:
   flutter_test:
