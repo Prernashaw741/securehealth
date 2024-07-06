@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class SignUpInput extends StatefulWidget {
   final String label;
   bool isPassword;
-  SignUpInput({super.key, required this.label, required this.isPassword});
+  final TextEditingController controller;
+  SignUpInput({super.key, required this.label, required this.isPassword,required this.controller});
 
   @override
   State<SignUpInput> createState() => _SignUpInputState();

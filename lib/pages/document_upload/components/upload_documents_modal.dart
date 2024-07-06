@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:securehealth/pages/document_upload/controllers/document_controller.dart';
 import 'package:securehealth/pages/document_upload/controllers/file_upload_controller.dart';
 
 class UploadDocumentsModal extends StatelessWidget {
@@ -35,7 +36,7 @@ class UploadDocumentsModal extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                        Gap(10),
+                        const Gap(10),
                         ElevatedButton(
                             onPressed: () async {
                               FilePickerResult? result = await FilePicker
@@ -43,7 +44,7 @@ class UploadDocumentsModal extends StatelessWidget {
                                   .pickFiles(withData: true);
                               if (result != null) {
                                 PlatformFile file = result.files.first;
-
+                                controller.file.value = file;
                                 controller.is_uploaded.value = true;
                               } else {
                                 // User canceled the picker
@@ -66,7 +67,7 @@ class UploadDocumentsModal extends StatelessWidget {
                                   color: Colors.white,
                                   fontWeight: FontWeight.w400),
                             )),
-                        Gap(2),
+                        const Gap(2),
                         controller.is_uploaded.value
                             ? Wrap(
                                 spacing: 5,
@@ -87,8 +88,9 @@ class UploadDocumentsModal extends StatelessWidget {
                                 ],
                               )
                             : Container(),
-                        Gap(20),
+                        const Gap(20),
                         TextFormField(
+                          controller: controller.documentNameController,
                           decoration: InputDecoration(
                               hintText: "Document Name",
                               labelText: "Document Name",
@@ -104,8 +106,29 @@ class UploadDocumentsModal extends StatelessWidget {
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400)),
                         ),
-                        Gap(10),
-                        ElevatedButton(onPressed: () {}, child: Text("Submit"))
+                        const Gap(10),
+                        ElevatedButton(
+                            onPressed: () async {
+                              await controller.UploadFile().then((value) =>
+                                  value
+                                      ? ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                          content: Text(
+                                              "File Uploaded Successfully"),
+                                          backgroundColor: Colors.green,
+                                        ))
+                                      : ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                          content: const Text(
+                                              "Failed to upload file"),
+                                          backgroundColor: Colors.red,
+                                        )));
+                              Navigator.of(context).pop();
+                              DocumentController pageController =  Get.find<DocumentController>();
+                              pageController.documents.clear();
+                              pageController.get_documents();
+                            },
+                            child: const Text("Submit"))
                       ],
                     ),
                   ),
