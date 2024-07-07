@@ -4,17 +4,18 @@ import 'package:dio/dio.dart' as dioResponse;
 import 'package:securehealth/constants/network.dart';
 
 class SignUpController extends GetxController{
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final Rx<TextEditingController> nameController = TextEditingController().obs;
+  final Rx<TextEditingController> emailController = TextEditingController().obs;
+  final Rx<TextEditingController> passwordController = TextEditingController().obs;
   Future<bool> signup() async{
     dioResponse.Response response;
     response = await dio.post("/signup/",data: {
-      'name': nameController.text,
-      'email': emailController.text,
-      'password': passwordController.text
+      'name': nameController.value.text,
+      'email': emailController.value.text,
+      'password': passwordController.value.text
     
     });
+    Get.snackbar("RESPONSE", response.statusCode.toString());
     if (response.statusCode == 200) {
       return true;
     }else{

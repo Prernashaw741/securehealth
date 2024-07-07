@@ -14,6 +14,7 @@ class _SignUpInputState extends State<SignUpInput> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: widget.controller,
         obscureText: widget.isPassword,
         decoration: InputDecoration(
             filled: true,

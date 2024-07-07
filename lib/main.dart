@@ -1,13 +1,21 @@
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+// import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:securehealth/constants/colors.dart';
+import 'package:securehealth/constants/network.dart';
 import 'package:securehealth/constants/pages.dart';
 import 'package:securehealth/constants/routes.dart';
-import 'package:securehealth/pages/document_upload/document_upload.dart';
-import 'package:securehealth/pages/signup/signup.dart';
 
 void main() {
+  // await GetStorage.init();
+  if (!kIsWeb) {
+    dio.interceptors.add(CookieManager(cookieJar));
+    
+  }
+
   runApp(const MyApp());
 }
 

@@ -12,7 +12,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: SignUpController(),
-      builder: (controller) =>  Scaffold(
+      builder: (controller) =>  Obx(() => Scaffold(
         body: SingleChildScrollView(
           child: Container(
             color: Colors.white,
@@ -67,7 +67,7 @@ class SignUpPage extends StatelessWidget {
                       SignUpInput(
                         label: "Full Name",
                         isPassword: false,
-                        controller: controller.nameController,
+                        controller: controller.nameController.value,
                       ),
                       const SizedBox(
                         height: 20,
@@ -75,7 +75,7 @@ class SignUpPage extends StatelessWidget {
                       SignUpInput(
                         label: "Email",
                         isPassword: false,
-                        controller: controller.emailController,
+                        controller: controller.emailController.value,
                       ),
                       const SizedBox(
                         height: 20,
@@ -83,14 +83,14 @@ class SignUpPage extends StatelessWidget {
                       SignUpInput(
                         label: "Password",
                         isPassword: true,
-                        controller: controller.passwordController,
+                        controller: controller.passwordController.value,
                       ),
                       const SizedBox(
                         height: 30,
                       ),
                       ElevatedButton(
                           onPressed: () async{
-                            await controller.signup().then((value) => value ? Get.toNamed(Routes.dashboard) : null);
+                            await controller.signup().then((value) => value ? Get.toNamed(Routes.login) : null);
                           },
                           child: Text(
                             "Sign Up",
@@ -114,7 +114,7 @@ class SignUpPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      ),)
     );
   }
 }

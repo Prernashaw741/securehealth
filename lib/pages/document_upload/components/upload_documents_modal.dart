@@ -124,9 +124,11 @@ class UploadDocumentsModal extends StatelessWidget {
                                           backgroundColor: Colors.red,
                                         )));
                               Navigator.of(context).pop();
-                              DocumentController pageController =  Get.find<DocumentController>();
+                              DocumentController pageController =
+                                  Get.find<DocumentController>();
                               pageController.documents.clear();
                               pageController.get_documents();
+                              pageController.counts();
                             },
                             child: const Text("Submit"))
                       ],
