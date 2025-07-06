@@ -8,21 +8,26 @@ class LoginController extends GetxController{
 
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
+  final RxBool isLoading = false.obs;
 
   Future<bool> login() async{
-    
-    dioResponse.Response response;
-    response = await dio.post("/login/",data: {
-      'email': email.text,
-      'password': password.text
-    });
-    if (response.statusCode == 200) {
-      return true;
-    }else{
+    try {
+      isLoading.value = true;
+      dioResponse.Response response;
+      response = await dio.post("/login/",data: {
+        'email': email.text,
+        'password': password.text
+      });
+      if (response.statusCode == 200) {
+        return true;
+      }else{
+        return false;
+      }
+    } catch (e) {
       return false;
+    } finally {
+      isLoading.value = false;
     }
-    
-    
   }
 
   Future<UserModel> current_user(){
