@@ -150,9 +150,8 @@ class FileUploadController extends getx.GetxController {
         uploadProgress.value = 1.0;
         uploadStatus.value = 'Upload completed successfully!';
         
-        // Reset form on successful upload
+        // Don't reset form here - let the calling code handle it after prescription extraction
         await Future.delayed(const Duration(milliseconds: 500));
-        resetForm();
         
         return true;
       } else {
@@ -211,6 +210,137 @@ class FileUploadController extends getx.GetxController {
       return name.split('.').last.toUpperCase();
     }
     return '';
+  }
+
+  // Extract prescription data from uploaded image
+  Future<Map<String, dynamic>?> extractPrescriptionData() async {
+    print('extractPrescriptionData: Starting extraction...');
+    
+    if (file.value == null) {
+      print('extractPrescriptionData: No file selected');
+      errorMessage.value = 'No file selected for prescription extraction';
+      return null;
+    }
+
+    try {
+      print('extractPrescriptionData: Setting upload status...');
+      uploadStatus.value = 'Extracting prescription data...';
+      
+      MultipartFile multipartFile;
+      
+      if (kIsWeb) {
+        // On web, use bytes instead of path
+        if (file.value!.bytes != null) {
+          multipartFile = MultipartFile.fromBytes(
+            file.value!.bytes!,
+            filename: file.value!.name,
+          );
+        } else {
+          errorMessage.value = 'File data is not available for extraction';
+          return null;
+        }
+      } else {
+        // On mobile/desktop, use file path
+        if (file.value!.path != null) {
+          multipartFile = await MultipartFile.fromFile(
+            file.value!.path!,
+            filename: file.value!.name,
+          );
+        } else {
+          errorMessage.value = 'File path is not available for extraction';
+          return null;
+        }
+      }
+
+      FormData formData = FormData.fromMap({
+        'prescription_image': multipartFile,
+      });
+
+      print('extractPrescriptionData: Calling API at /extract-prescription/');
+      print('extractPrescriptionData: FormData created with prescription_image');
+
+      // Call the prescription extraction API
+      Response response = await dio.post(
+        '/extract-prescription/',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      print('extractPrescriptionData: API call completed with status: ${response.statusCode}');
+      print('extractPrescriptionData: Response data: ${response.data}');
+
+      uploadStatus.value = 'Processing extraction results...';
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData != null && responseData['extracted_data'] != null) {
+          uploadStatus.value = 'Prescription extracted successfully!';
+          return responseData['extracted_data'] as Map<String, dynamic>;
+        } else {
+          errorMessage.value = 'Invalid response format from prescription extraction';
+          return null;
+        }
+      } else {
+        errorMessage.value = 'Prescription extraction failed with status: ${response.statusCode}';
+        return null;
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        errorMessage.value = 'Connection timeout during prescription extraction';
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        errorMessage.value = 'Server response timeout during prescription extraction';
+      } else if (e.type == DioExceptionType.badResponse) {
+        errorMessage.value = 'Server error during prescription extraction: ${e.response?.statusCode}';
+      } else {
+        errorMessage.value = 'Network error during prescription extraction: ${e.message}';
+      }
+      return null;
+    } catch (e) {
+      errorMessage.value = 'Unexpected error during prescription extraction: ${e.toString()}';
+      return null;
+    } finally {
+      uploadStatus.value = '';
+    }
+  }
+
+  // Check if file is likely a prescription based on file name and extension
+  bool isPrescriptionCandidate() {
+    if (file.value == null) {
+      print('isPrescriptionCandidate: No file selected');
+      return false;
+    }
+    
+    final fileName = file.value!.name.toLowerCase();
+    final extension = fileExtension.toLowerCase();
+    
+    print('isPrescriptionCandidate: fileName = $fileName, extension = $extension');
+    
+    // Check if it's an image file (prescriptions are typically images)
+    final imageExtensions = ['jpg', 'jpeg', 'png'];
+    if (!imageExtensions.contains(extension)) {
+      print('isPrescriptionCandidate: Not an image file');
+      return false;
+    }
+    
+    // For testing purposes, let's make this less restrictive
+    // Accept any image file for now, or files with prescription keywords
+    final prescriptionKeywords = [
+      'prescription', 'rx', 'medicine', 'medication', 'doctor', 'clinic',
+      'medical', 'health', 'pharma', 'drug', 'tablet', 'capsule'
+    ];
+    
+    final hasKeyword = prescriptionKeywords.any((keyword) => fileName.contains(keyword));
+    
+    // For testing: accept any image file, regardless of filename
+    // In production, you might want to be more selective
+    print('isPrescriptionCandidate: hasKeyword = $hasKeyword');
+    print('isPrescriptionCandidate: Accepting all image files for testing');
+    
+    return true; // Accept any image file for testing
   }
 
   @override

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:securehealth/constants/colors.dart';
+import 'package:securehealth/constants/routes.dart';
 import 'package:securehealth/pages/document_upload/controllers/document_controller.dart';
 import 'package:securehealth/pages/document_upload/controllers/file_upload_controller.dart';
+import 'package:securehealth/pages/document_upload/prescription_details.dart';
 import 'package:securehealth/utils/animations.dart';
 import 'package:securehealth/utils/ui_helpers.dart';
 
@@ -476,6 +478,7 @@ class UploadDocumentsModal extends StatelessWidget {
         );
 
         if (result) {
+          print('Upload successful, refreshing documents and checking for prescription...');
           try {
             // Refresh the documents list
             final DocumentController pageController = Get.find<DocumentController>();
@@ -486,6 +489,14 @@ class UploadDocumentsModal extends StatelessWidget {
             // If controller not found, just ignore
             // DocumentController not found - this is expected in some cases
           }
+          
+          // Check if the uploaded file is a prescription and show extraction results
+          print('Calling _checkForPrescriptionExtraction...');
+          await _checkForPrescriptionExtraction(controller);
+          print('_checkForPrescriptionExtraction completed');
+          
+          // Reset form after prescription extraction is complete
+          controller.resetForm();
         }
       }
     } catch (e) {
@@ -501,6 +512,113 @@ class UploadDocumentsModal extends StatelessWidget {
           icon: Icon(Icons.error_outline, color: Colors.red.shade900),
         );
       }
+    }
+  }
+
+  Future<void> _checkForPrescriptionExtraction(FileUploadController controller) async {
+    // Debug: Log file information
+    print('=== Prescription Extraction Debug ===');
+    print('File selected: ${controller.file.value?.name}');
+    print('File extension: ${controller.fileExtension}');
+    print('Is prescription candidate: ${controller.isPrescriptionCandidate()}');
+    
+    // Check if the uploaded file is a prescription candidate
+    if (!controller.isPrescriptionCandidate()) {
+      print('File is not a prescription candidate, skipping extraction');
+      return;
+    }
+    
+    print('Starting prescription extraction...');
+    
+    try {
+      // Show loading dialog
+      Get.dialog(
+        Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(SecureHealthColors.coolOrange),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Extracting Prescription Data',
+                  style: Theme.of(Get.context!).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: SecureHealthColors.neutralDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please wait while we analyze your prescription...',
+                  style: Theme.of(Get.context!).textTheme.bodyMedium?.copyWith(
+                    color: SecureHealthColors.neutralMedium,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+      
+      // Call the real API to extract prescription data
+      final extractedData = await controller.extractPrescriptionData();
+      
+      // Close loading dialog
+      Get.back();
+      
+      if (extractedData != null) {
+        // Navigate to prescription details page with real data
+        Get.to(
+          () => PrescriptionDetailsPage(
+            extractedData: extractedData,
+          ),
+          transition: Transition.rightToLeftWithFade,
+          duration: const Duration(milliseconds: 300),
+        );
+      } else {
+        // Show error if extraction failed
+        Get.snackbar(
+          'Extraction Failed',
+          controller.errorMessage.value.isNotEmpty 
+              ? controller.errorMessage.value
+              : 'Unable to extract prescription data from the uploaded image.',
+          backgroundColor: Colors.orange.shade50,
+          colorText: Colors.orange.shade900,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          duration: const Duration(seconds: 4),
+          icon: Icon(
+            Icons.warning_outlined,
+            color: Colors.orange.shade900,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog if still open
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
+      
+      // Show error snackbar
+      Get.snackbar(
+        'Error',
+        'An error occurred while extracting prescription data: ${e.toString()}',
+        backgroundColor: Colors.red.shade50,
+        colorText: Colors.red.shade900,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        duration: const Duration(seconds: 4),
+        icon: Icon(
+          Icons.error_outline,
+          color: Colors.red.shade900,
+        ),
+      );
     }
   }
 }

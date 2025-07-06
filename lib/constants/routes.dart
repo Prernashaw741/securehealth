@@ -4,4 +4,5 @@ class Routes{
   static const String login = "/login";
   static const String shared = "/shared";
   static const String sharedWithYou = "/shared-with-you";
+  static const String prescriptionDetails = "/prescription-details";
 }

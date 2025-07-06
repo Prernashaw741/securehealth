@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:securehealth/constants/routes.dart';
 import 'package:securehealth/pages/document_upload/document_upload.dart';
+import 'package:securehealth/pages/document_upload/prescription_details.dart';
 import 'package:securehealth/pages/document_upload/shared.dart';
 import 'package:securehealth/pages/document_upload/shared_with_you.dart';
 import 'package:securehealth/pages/signup/login.dart';
@@ -17,5 +18,10 @@ var pages = [
   ),
   GetPage(name: Routes.login, page: () => LoginPage(),transition: Transition.rightToLeftWithFade,),
   GetPage(name: Routes.shared, page: () => SharedList(),transition: Transition.rightToLeftWithFade,),
-  GetPage(name: Routes.sharedWithYou, page: () => SharedWithYouList(),transition: Transition.rightToLeftWithFade,)
+  GetPage(name: Routes.sharedWithYou, page: () => SharedWithYouList(),transition: Transition.rightToLeftWithFade,),
+  GetPage(
+    name: Routes.prescriptionDetails, 
+    page: () => const PrescriptionDetailsPage(extractedData: {}),
+    transition: Transition.rightToLeftWithFade,
+  ),
 ];
