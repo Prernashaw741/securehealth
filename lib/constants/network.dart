@@ -5,7 +5,10 @@ BaseOptions options = BaseOptions(
   baseUrl: "https://securehealth-backend-1-production.up.railway.app",
   validateStatus: (status) {
     return true;
-  
+  },
+  // Enable sending cookies for web platform
+  extra: {
+    'withCredentials': true,
   },
 );
 final cookieJar = CookieJar();

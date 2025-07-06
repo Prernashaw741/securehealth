@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,15 @@ void main() {
   // await GetStorage.init();
   if (!kIsWeb) {
     dio.interceptors.add(CookieManager(cookieJar));
-    
+  } else {
+    // For web platform, add interceptor to handle cookies
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        // Ensure cookies are sent with requests on web
+        options.extra['withCredentials'] = true;
+        handler.next(options);
+      },
+    ));
   }
 
   runApp(const MyApp());
