@@ -435,7 +435,7 @@ class DocumentUpload extends StatelessWidget {
   }
 
   Widget _buildDocumentsList(BuildContext context, DocumentController controller) {
-    final recentDocs = controller.documents.take(5).toList();
+    final recentDocs = controller.documents.toList();
     
     return Column(
       children: recentDocs.asMap().entries.map((entry) {
